@@ -1,8 +1,9 @@
-import OpenAI from 'openai';
 import { createSupplyCard } from '../src/services/supplyGenerator.js';
 import { buildSupplyMessages } from './supplyPrompt.js';
 
 const DEFAULT_MODEL = 'gpt-5-nano';
+const DEFAULT_BASE_URL = 'https://api.openai.com/v1';
+const DEFAULT_TIMEOUT_MS = 25000;
 
 function createMockCard(params) {
   const card = createSupplyCard(params);
@@ -57,13 +58,7 @@ function hasUnsafeContent(text) {
 }
 
 async function createOpenAiCard(params) {
-  const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    baseURL: process.env.OPENAI_BASE_URL,
-    timeout: Number(process.env.OPENAI_TIMEOUT_MS) || 12000
-  });
-
-  const response = await createChatCompletion(client, params);
+  const response = await createChatCompletion(params);
   const content = response.choices?.[0]?.message?.content;
 
   if (!String(content ?? '').trim()) {
@@ -77,15 +72,70 @@ async function createOpenAiCard(params) {
   return normalizeAiText(content, params);
 }
 
-function createChatCompletion(client, params) {
-  return client.chat.completions.create({
-    model: process.env.OPENAI_MODEL || DEFAULT_MODEL,
-    messages: buildSupplyMessages(params)
-  });
+export function getChatCompletionsUrl() {
+  const baseUrl = (process.env.OPENAI_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, '');
+
+  if (baseUrl.endsWith('/chat/completions')) {
+    return baseUrl;
+  }
+
+  return `${baseUrl}/chat/completions`;
+}
+
+export function getPublicUrlLabel(url) {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    return 'invalid-url';
+  }
+}
+
+export async function createChatCompletion(params) {
+  const url = getChatCompletionsUrl();
+  const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
+  const timeoutMs = Number(process.env.OPENAI_TIMEOUT_MS) || DEFAULT_TIMEOUT_MS;
+  const startedAt = Date.now();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  console.log(`Calling model provider: model=${model}, url=${getPublicUrlLabel(url)}, timeout=${timeoutMs}ms`);
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model,
+        messages: buildSupplyMessages(params)
+      }),
+      signal: controller.signal
+    });
+
+    const text = await response.text();
+
+    console.log(`Model provider responded: status=${response.status}, elapsed=${Date.now() - startedAt}ms`);
+
+    if (!response.ok) {
+      throw new Error(`模型接口返回 ${response.status}: ${text.slice(0, 500)}`);
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      throw new Error(`模型接口没有返回合法 JSON: ${text.slice(0, 500)}`);
+    }
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function generateSupplyCard(params) {
   if (!process.env.OPENAI_API_KEY) {
+    console.log('OPENAI_API_KEY is missing, using mock supply.');
     return createMockCard(params);
   }
 
