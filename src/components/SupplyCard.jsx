@@ -1,4 +1,5 @@
 import { Heart, Leaf, RefreshCw } from 'lucide-react';
+import ExpandableText from './ExpandableText.jsx';
 
 export default function SupplyCard({ card, isFavorite, isGenerating, onFavorite, onRegenerate }) {
   if (!card) {
@@ -22,7 +23,7 @@ export default function SupplyCard({ card, isFavorite, isGenerating, onFavorite,
         {!card.matched && <span className="tag subtle">同类型随机</span>}
       </div>
       <h2>{card.title}</h2>
-      <p className={isAiCard ? 'ai-answer' : undefined}>{card.content}</p>
+      <ExpandableText text={card.content} className={isAiCard ? 'ai-answer' : undefined} limit={190} />
       {!isAiCard && (
         <div className="card-tags" aria-label="补给标签">
           {card.tags.map((tag) => (

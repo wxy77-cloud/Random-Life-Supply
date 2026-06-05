@@ -397,6 +397,36 @@ p {
   border-top: 1px dashed rgba(95, 118, 84, 0.32);
 }
 
+.expandable-text p {
+  margin-bottom: 0;
+  white-space: pre-wrap;
+}
+
+.detail-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  margin-top: 12px;
+  padding: 0 12px;
+  color: var(--sage-deep);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(95, 118, 84, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.detail-button:hover {
+  transform: translateY(-2px);
+  background: rgba(246, 214, 111, 0.34);
+  border-color: rgba(64, 87, 59, 0.34);
+  box-shadow: 0 10px 20px rgba(95, 118, 84, 0.1);
+}
+
 .card-top {
   display: flex;
   flex-wrap: wrap;
@@ -597,7 +627,7 @@ p {
   line-height: 1.35;
 }
 
-.recent-card p {
+.recent-card .expandable-text p {
   display: -webkit-box;
   margin-bottom: 0;
   overflow: hidden;
@@ -605,6 +635,12 @@ p {
   line-height: 1.7;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+}
+
+.recent-card .expandable-text.expanded p {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
 }
 
 .recent-card-actions {

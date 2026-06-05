@@ -1,4 +1,5 @@
 import { Eye, Heart, Trash2 } from 'lucide-react';
+import ExpandableText from './ExpandableText.jsx';
 
 export default function RecentSupplies({ history, favorites, onView, onFavorite, onClear }) {
   if (history.length === 0) {
@@ -39,7 +40,7 @@ export default function RecentSupplies({ history, favorites, onView, onFavorite,
                 <span className="tag sage">{card.topic}</span>
               </div>
               <h3>{card.title}</h3>
-              <p>{card.content}</p>
+              <ExpandableText text={card.content} limit={90} />
               <div className="recent-card-actions">
                 <button className="small-tool-button" type="button" onClick={() => onView(card)}>
                   <Eye size={16} aria-hidden="true" />

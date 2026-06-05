@@ -1,4 +1,5 @@
 import { Heart, Trash2 } from 'lucide-react';
+import ExpandableText from '../components/ExpandableText.jsx';
 
 export default function FavoritesPage({ favorites, onRemoveFavorite }) {
   return (
@@ -29,7 +30,7 @@ export default function FavoritesPage({ favorites, onRemoveFavorite }) {
                   {isAiCard && <span className="tag subtle">AI 生成</span>}
                 </div>
                 <h2>{card.title}</h2>
-                <p>{card.content}</p>
+                <ExpandableText text={card.content} limit={180} />
                 {!isAiCard && (
                   <div className="card-tags" aria-label="补给标签">
                     {card.tags.map((tag) => (

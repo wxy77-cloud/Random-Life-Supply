@@ -45,7 +45,7 @@ function parseAiText(text) {
   if (titleMatch || contentMatch) {
     return {
       title: clampText(titleMatch?.[1], 20, 'AI 补给'),
-      content: clampText(contentMatch?.[1], 200, rawText || '先给自己一点安静的空间，再继续往前走。')
+      content: clampText(contentMatch?.[1], 500, rawText || '先给自己一点安静的空间，再继续往前走。')
     };
   }
 
@@ -54,7 +54,7 @@ function parseAiText(text) {
 
   return {
     title: clampText(firstLine, 20, 'AI 补给'),
-    content: clampText(fallbackContent, 200, '先给自己一点安静的空间，再继续往前走。')
+    content: clampText(fallbackContent, 500, '先给自己一点安静的空间，再继续往前走。')
   };
 }
 
