@@ -3,6 +3,7 @@ import Header from './components/Header.jsx';
 import AboutPage from './pages/AboutPage.jsx';
 import FavoritesPage from './pages/FavoritesPage.jsx';
 import StationPage from './pages/StationPage.jsx';
+import { CUSTOM_TOPIC } from './components/TopicSelector.jsx';
 import { modes, topics } from './data/options.js';
 import { generateSupply } from './services/supplyApi.js';
 import { favoriteStore } from './storage/favoriteStore.js';
@@ -34,7 +35,11 @@ export default function App() {
   }
 
   function getActiveTopic() {
-    return customTopic.trim() || selectedTopic;
+    if (selectedTopic === CUSTOM_TOPIC) {
+      return customTopic.trim() || CUSTOM_TOPIC;
+    }
+
+    return selectedTopic;
   }
 
   async function requestSupply(params) {

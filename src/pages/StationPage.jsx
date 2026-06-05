@@ -1,8 +1,8 @@
-import CustomTopicInput from '../components/CustomTopicInput.jsx';
 import OptionGroup from '../components/OptionGroup.jsx';
 import RecentSupplies from '../components/RecentSupplies.jsx';
 import SupplyActions from '../components/SupplyActions.jsx';
 import SupplyCard from '../components/SupplyCard.jsx';
+import TopicSelector from '../components/TopicSelector.jsx';
 import { modes, supplyTypes, topics } from '../data/options.js';
 
 export default function StationPage({
@@ -36,8 +36,13 @@ export default function StationPage({
       <div className="station-grid">
         <div className="control-panel">
           <OptionGroup label="当前模式" options={modes} value={selectedMode} onChange={onModeChange} />
-          <OptionGroup label="关注主题" options={topics} value={selectedTopic} onChange={onTopicChange} />
-          <CustomTopicInput value={customTopic} onChange={onCustomTopicChange} />
+          <TopicSelector
+            options={topics}
+            value={selectedTopic}
+            customTopic={customTopic}
+            onChange={onTopicChange}
+            onCustomTopicChange={onCustomTopicChange}
+          />
           <SupplyActions supplyTypes={supplyTypes} onGenerate={onGenerate} />
         </div>
 

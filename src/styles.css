@@ -281,6 +281,7 @@ p {
 
 .custom-topic-input {
   width: 100%;
+  margin-top: 2px;
   min-height: 44px;
   padding: 0 14px;
   color: var(--ink);
@@ -384,6 +385,86 @@ p {
   place-items: center;
   align-content: center;
   text-align: center;
+}
+
+.loading-card {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.receipt-loader {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: 96px;
+  height: 108px;
+}
+
+.loader-machine {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 86px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--sage), var(--sage-deep));
+  border: 2px solid rgba(64, 87, 59, 0.32);
+  border-radius: 10px;
+  box-shadow: 0 12px 22px rgba(95, 118, 84, 0.16);
+}
+
+.loader-machine span {
+  width: 8px;
+  height: 8px;
+  background: var(--pomelo);
+  border-radius: 999px;
+  animation: loader-dot 1.1s ease-in-out infinite;
+}
+
+.loader-machine span:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.loader-machine span:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+.loader-paper {
+  position: absolute;
+  top: 38px;
+  width: 62px;
+  height: 66px;
+  padding: 14px 10px;
+  background: var(--receipt);
+  border: 1px solid rgba(95, 118, 84, 0.25);
+  border-radius: 4px;
+  box-shadow: 0 10px 18px rgba(95, 118, 84, 0.12);
+  animation: paper-slide 1.6s ease-in-out infinite;
+}
+
+.loader-paper i {
+  display: block;
+  height: 3px;
+  margin-bottom: 8px;
+  background: rgba(95, 118, 84, 0.26);
+  border-radius: 999px;
+}
+
+.loading-card h2 {
+  margin-bottom: 0;
+}
+
+.loading-message {
+  max-width: 320px;
+  padding-top: 0;
+  border-top: 0;
+  margin-bottom: 0;
+  animation: loading-text 1.8s ease both infinite;
 }
 
 .supply-card h2 {
@@ -775,6 +856,48 @@ p {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes paper-slide {
+  0%,
+  100% {
+    transform: translateY(-5px);
+  }
+
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@keyframes loader-dot {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes loading-text {
+  0% {
+    opacity: 0.35;
+    transform: translateY(4px);
+  }
+
+  20%,
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0.35;
+    transform: translateY(-3px);
   }
 }
 
