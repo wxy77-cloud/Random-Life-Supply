@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="随机人生补给站">
+  <rect width="64" height="64" rx="16" fill="#F6D66F"/>
+  <path d="M18 23c0-6.6 5.4-12 12-12h4c6.6 0 12 5.4 12 12v2h-6v-2c0-3.3-2.7-6-6-6h-4c-3.3 0-6 2.7-6 6v2h-6v-2Z" fill="#5F7654"/>
+  <path d="M15 24h34l-3 27H18l-3-27Z" fill="#FFFDF6" stroke="#5F7654" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M23 34h18M25 42h14" stroke="#5F7654" stroke-width="3" stroke-linecap="round"/>
+  <path d="M43 13l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4Z" fill="#F0BD38"/>
+</svg>
