@@ -3,7 +3,7 @@ import { createSupplyCard } from '../src/services/supplyGenerator.js';
 import { buildSupplyMessages, supplyCardSchema } from './supplyPrompt.js';
 
 const DEFAULT_MODEL = 'gpt-5-nano';
-const MAX_COMPLETION_TOKENS = 500;
+const MAX_COMPLETION_TOKENS = 420;
 
 function createMockCard(params) {
   const card = createSupplyCard(params);
@@ -68,6 +68,20 @@ function parseJsonObject(text) {
   }
 }
 
+function assertSupplyShape(card) {
+  if (!card || typeof card !== 'object' || Array.isArray(card)) {
+    throw new Error('模型返回的不是 JSON 对象');
+  }
+
+  if (typeof card.title !== 'string' || typeof card.content !== 'string') {
+    throw new Error('模型返回缺少 title 或 content');
+  }
+
+  if (!Array.isArray(card.tags) || !Array.isArray(card.modes)) {
+    throw new Error('模型返回缺少 tags 或 modes 数组');
+  }
+}
+
 function hasUnsafeContent(card) {
   const text = `${card.title ?? ''} ${card.content ?? ''} ${(card.tags ?? []).join(' ')}`;
   const unsafeWords = ['自杀', '自残', '毒品', '赌博', '色情', '暴力', '武器', '违法', '犯罪'];
@@ -78,21 +92,22 @@ async function createOpenAiCard(params) {
   const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
     baseURL: process.env.OPENAI_BASE_URL,
-    timeout: 18000
+    timeout: Number(process.env.OPENAI_TIMEOUT_MS) || 12000
   });
 
   let response;
-  const preferSchema = process.env.OPENAI_RESPONSE_FORMAT === 'json_schema';
+  const preferJsonObject = process.env.OPENAI_RESPONSE_FORMAT === 'json_object';
 
   try {
-    response = await createChatCompletion(client, params, preferSchema ? getJsonSchemaFormat() : { type: 'json_object' });
+    response = await createChatCompletion(client, params, preferJsonObject ? { type: 'json_object' } : getJsonSchemaFormat());
   } catch (error) {
-    console.warn('Preferred JSON mode failed, retrying with simpler JSON mode:', error);
-    response = await createChatCompletion(client, params, preferSchema ? { type: 'json_object' } : null);
+    console.warn('Preferred JSON mode failed, retrying with JSON object mode:', error);
+    response = await createChatCompletion(client, params, { type: 'json_object' });
   }
 
   const content = response.choices?.[0]?.message?.content;
   const parsedCard = parseJsonObject(content);
+  assertSupplyShape(parsedCard);
 
   if (hasUnsafeContent(parsedCard)) {
     throw new Error('模型返回内容未通过安全词检查');
@@ -116,7 +131,6 @@ function createChatCompletion(client, params, responseFormat) {
   const request = {
     model: process.env.OPENAI_MODEL || DEFAULT_MODEL,
     messages: buildSupplyMessages(params),
-    temperature: 0.8,
     max_completion_tokens: MAX_COMPLETION_TOKENS
   };
 
