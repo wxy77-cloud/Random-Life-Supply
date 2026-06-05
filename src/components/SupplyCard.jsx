@@ -37,6 +37,7 @@ export default function SupplyCard({ card, isFavorite, isGenerating, onFavorite,
 
   return (
     <section className="supply-card">
+      {card.fallbackNotice && <div className="fallback-notice">{card.fallbackNotice}</div>}
       <div className="card-top">
         <span className="tag">{card.mode}</span>
         <span className="tag sage">{card.topic}</span>

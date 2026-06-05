@@ -14,7 +14,8 @@ function createMockCard(params) {
         content: ensureContentLength(clampText(card.content, 180, '先给自己一点安静的空间，再继续往前走。')),
         tags: normalizeList(card.tags, params.topic, 5),
         modes: normalizeList(card.modes, params.mode, 3),
-        source: 'mock'
+        source: 'mock',
+        fallbackNotice: params.fallbackNotice
       }
     : null;
 }
@@ -179,6 +180,9 @@ export async function generateSupplyCard(params) {
     return await createOpenAiCard(params);
   } catch (error) {
     console.error('OpenAI generation failed, falling back to mock:', getProviderErrorInfo(error));
-    return createMockCard(params);
+    return createMockCard({
+      ...params,
+      fallbackNotice: 'AI迟到了，现在敷衍你一下~'
+    });
   }
 }

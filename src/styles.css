@@ -515,6 +515,17 @@ p {
   margin-bottom: 22px;
 }
 
+.fallback-notice {
+  margin-bottom: 18px;
+  padding: 10px 12px;
+  color: #705a13;
+  font-size: 0.92rem;
+  font-weight: 700;
+  background: rgba(246, 214, 111, 0.42);
+  border: 1px dashed rgba(112, 90, 19, 0.24);
+  border-radius: 8px;
+}
+
 .card-top.compact {
   margin-bottom: 12px;
 }
