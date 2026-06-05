@@ -11,9 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "lucide-react": "latest",
+    "openai": "^6.42.0",
     "react": "latest",
-    "react-dom": "latest",
-    "lucide-react": "latest"
+    "react-dom": "latest"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "latest",

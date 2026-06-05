@@ -1,4 +1,4 @@
-import { createSupplyCard } from '../src/services/supplyGenerator.js';
+import { generateSupplyCard } from './supplyService.js';
 
 const PORT = 3001;
 
@@ -32,7 +32,7 @@ function readJsonBody(request) {
 
 async function handleGenerate(request, response) {
   const payload = await readJsonBody(request);
-  const card = createSupplyCard(payload);
+  const card = await generateSupplyCard(payload);
 
   if (!card) {
     sendJson(response, 404, { error: '没有找到对应类型的补给内容' });
