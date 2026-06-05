@@ -16,7 +16,7 @@ export function buildSupplyMessages({ type, mode, topic }) {
     },
     {
       role: 'user',
-      content: `请根据用户选择生成一段 200 字以内的补给内容。直接返回内容正文，不要 JSON，不要 Markdown，不要标题。用户当前模式：${mode}。用户关注主题：${topic}。补给类型：${typeLabel}。`
+      content: `请根据用户选择生成一张补给卡。用户当前模式：${mode}。用户关注主题：${topic}。补给类型：${typeLabel}。请输出两行：第一行以“标题：”开头，标题不超过20个中文字符；第二行以“正文：”开头，正文200字以内。不要 JSON，不要 Markdown。`
     }
   ];
 }

@@ -21,7 +21,7 @@ export default function SupplyCard({ card, isFavorite, isGenerating, onFavorite,
         {isAiCard && <span className="tag subtle">AI 生成</span>}
         {!card.matched && <span className="tag subtle">同类型随机</span>}
       </div>
-      {!isAiCard && <h2>{card.title}</h2>}
+      <h2>{card.title}</h2>
       <p className={isAiCard ? 'ai-answer' : undefined}>{card.content}</p>
       {!isAiCard && (
         <div className="card-tags" aria-label="补给标签">

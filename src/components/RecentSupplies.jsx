@@ -31,7 +31,6 @@ export default function RecentSupplies({ history, favorites, onView, onFavorite,
       <div className="recent-list" aria-label="最近收到的补给">
         {history.map((card) => {
           const isFavorite = favorites.some((item) => item.id === card.id);
-          const isAiCard = card.source === 'openai';
 
           return (
             <article className="recent-card" key={`${card.receivedAt}-${card.id}`}>
@@ -39,7 +38,7 @@ export default function RecentSupplies({ history, favorites, onView, onFavorite,
                 <span className="tag">{card.mode}</span>
                 <span className="tag sage">{card.topic}</span>
               </div>
-              {!isAiCard && <h3>{card.title}</h3>}
+              <h3>{card.title}</h3>
               <p>{card.content}</p>
               <div className="recent-card-actions">
                 <button className="small-tool-button" type="button" onClick={() => onView(card)}>

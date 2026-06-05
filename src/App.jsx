@@ -12,13 +12,14 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('station');
   const [selectedMode, setSelectedMode] = useState(modes[0]);
   const [selectedTopic, setSelectedTopic] = useState(topics[0]);
+  const [customTopic, setCustomTopic] = useState('');
   const [currentCard, setCurrentCard] = useState(null);
   const [favorites, setFavorites] = useState(() => favoriteStore.list());
   const [history, setHistory] = useState(() => historyStore.list());
   const [isGenerating, setIsGenerating] = useState(false);
 
   async function handleGenerate(type) {
-    await requestSupply({ type, mode: selectedMode, topic: selectedTopic });
+    await requestSupply({ type, mode: selectedMode, topic: getActiveTopic() });
   }
 
   async function handleRegenerate() {
@@ -27,9 +28,13 @@ export default function App() {
     await requestSupply({
       type: currentCard.type,
       mode: selectedMode,
-      topic: selectedTopic,
+      topic: getActiveTopic(),
       currentId: currentCard.id
     });
+  }
+
+  function getActiveTopic() {
+    return customTopic.trim() || selectedTopic;
   }
 
   async function requestSupply(params) {
@@ -65,12 +70,14 @@ export default function App() {
       <StationPage
         selectedMode={selectedMode}
         selectedTopic={selectedTopic}
+        customTopic={customTopic}
         currentCard={currentCard}
         favorites={favorites}
         history={history}
         isGenerating={isGenerating}
         onModeChange={setSelectedMode}
         onTopicChange={setSelectedTopic}
+        onCustomTopicChange={setCustomTopic}
         onGenerate={handleGenerate}
         onRegenerate={handleRegenerate}
         onToggleFavorite={handleToggleFavorite}

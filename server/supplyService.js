@@ -20,11 +20,13 @@ function createMockCard(params) {
 }
 
 function normalizeAiText(text, params) {
+  const { title, content } = parseAiText(text);
+
   return {
     id: `ai-${Date.now()}`,
     type: params.type,
-    title: 'AI 补给',
-    content: clampText(text, 200, '先给自己一点安静的空间，再继续往前走。'),
+    title,
+    content,
     tags: [params.topic],
     modes: [params.mode],
     mode: params.mode,
@@ -32,6 +34,27 @@ function normalizeAiText(text, params) {
     matched: true,
     generatedAt: Date.now(),
     source: 'openai'
+  };
+}
+
+function parseAiText(text) {
+  const rawText = String(text ?? '').trim();
+  const titleMatch = rawText.match(/标题[:：]\s*(.+)/);
+  const contentMatch = rawText.match(/正文[:：]\s*([\s\S]+)/);
+
+  if (titleMatch || contentMatch) {
+    return {
+      title: clampText(titleMatch?.[1], 20, 'AI 补给'),
+      content: clampText(contentMatch?.[1], 200, rawText || '先给自己一点安静的空间，再继续往前走。')
+    };
+  }
+
+  const [firstLine, ...restLines] = rawText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const fallbackContent = restLines.length > 0 ? restLines.join(' ') : rawText;
+
+  return {
+    title: clampText(firstLine, 20, 'AI 补给'),
+    content: clampText(fallbackContent, 200, '先给自己一点安静的空间，再继续往前走。')
   };
 }
 

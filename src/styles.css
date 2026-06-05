@@ -279,6 +279,27 @@ p {
   font-weight: 800;
 }
 
+.custom-topic-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(95, 118, 84, 0.24);
+  border-radius: 8px;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.custom-topic-input:focus {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(64, 87, 59, 0.46);
+  box-shadow: 0 0 0 4px rgba(246, 214, 111, 0.24);
+}
+
 .supply-actions {
   display: grid;
   gap: 12px;

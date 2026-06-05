@@ -28,7 +28,7 @@ export default function FavoritesPage({ favorites, onRemoveFavorite }) {
                   <span className="tag sage">{card.topic}</span>
                   {isAiCard && <span className="tag subtle">AI 生成</span>}
                 </div>
-                {!isAiCard && <h2>{card.title}</h2>}
+                <h2>{card.title}</h2>
                 <p>{card.content}</p>
                 {!isAiCard && (
                   <div className="card-tags" aria-label="补给标签">

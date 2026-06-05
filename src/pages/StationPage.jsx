@@ -1,3 +1,4 @@
+import CustomTopicInput from '../components/CustomTopicInput.jsx';
 import OptionGroup from '../components/OptionGroup.jsx';
 import RecentSupplies from '../components/RecentSupplies.jsx';
 import SupplyActions from '../components/SupplyActions.jsx';
@@ -7,12 +8,14 @@ import { modes, supplyTypes, topics } from '../data/options.js';
 export default function StationPage({
   selectedMode,
   selectedTopic,
+  customTopic,
   currentCard,
   favorites,
   history,
   isGenerating,
   onModeChange,
   onTopicChange,
+  onCustomTopicChange,
   onGenerate,
   onRegenerate,
   onToggleFavorite,
@@ -34,6 +37,7 @@ export default function StationPage({
         <div className="control-panel">
           <OptionGroup label="当前模式" options={modes} value={selectedMode} onChange={onModeChange} />
           <OptionGroup label="关注主题" options={topics} value={selectedTopic} onChange={onTopicChange} />
+          <CustomTopicInput value={customTopic} onChange={onCustomTopicChange} />
           <SupplyActions supplyTypes={supplyTypes} onGenerate={onGenerate} />
         </div>
 
