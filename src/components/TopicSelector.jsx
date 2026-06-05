@@ -32,7 +32,7 @@ export default function TopicSelector({ options, value, customTopic, onChange, o
           type="text"
           value={customTopic}
           onChange={(event) => onCustomTopicChange(event.target.value)}
-          placeholder="例如：雨天、咖啡、拖延、宇宙、毕业"
+          placeholder="例如：雨天、咖啡、宇宙、孤独、狐狸..."
           maxLength={30}
           autoFocus
         />

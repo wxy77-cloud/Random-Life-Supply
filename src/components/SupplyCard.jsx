@@ -28,7 +28,7 @@ export default function SupplyCard({ card, isFavorite, isGenerating, onFavorite,
       <section className="supply-card empty">
         <Leaf size={28} aria-hidden="true" />
         <h2>{isGenerating ? '正在从后端取一张补给' : '还没有抽取补给'}</h2>
-        <p>{isGenerating ? '便利店小票机正在轻轻转动。' : '先选择此刻的模式和关注主题，再点击一个补给按钮。'}</p>
+        <p>{isGenerating ? '便利店小票机正在轻轻转动...' : '先选择此刻的模式和关注主题，再点击一个补给按钮。'}</p>
       </section>
     );
   }
