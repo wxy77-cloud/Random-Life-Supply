@@ -1,4 +1,33 @@
-import { createChatCompletion, getChatCompletionsUrl, getPublicUrlLabel } from '../../server/supplyService.js';
+import {
+  createChatCompletion,
+  getChatCompletionsUrl,
+  getProviderErrorInfo,
+  getPublicUrlLabel
+} from '../../server/supplyService.js';
+
+async function probeProviderOrigin() {
+  const url = new URL(getChatCompletionsUrl());
+  const startedAt = Date.now();
+
+  try {
+    const result = await fetch(url.origin, {
+      method: 'HEAD',
+      signal: AbortSignal.timeout(8000)
+    });
+
+    return {
+      ok: true,
+      status: result.status,
+      elapsedMs: Date.now() - startedAt
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      elapsedMs: Date.now() - startedAt,
+      error: getProviderErrorInfo(error)
+    };
+  }
+}
 
 export default async function handler(request, response) {
   if (request.method !== 'GET') {
@@ -16,6 +45,7 @@ export default async function handler(request, response) {
   }
 
   const startedAt = Date.now();
+  const originProbe = await probeProviderOrigin();
 
   try {
     const result = await createChatCompletion({
@@ -27,6 +57,7 @@ export default async function handler(request, response) {
     response.status(200).json({
       ok: true,
       elapsedMs: Date.now() - startedAt,
+      originProbe,
       url: getPublicUrlLabel(getChatCompletionsUrl()),
       model: process.env.OPENAI_MODEL || 'gpt-5-nano',
       sample: result.choices?.[0]?.message?.content ?? ''
@@ -35,10 +66,10 @@ export default async function handler(request, response) {
     response.status(200).json({
       ok: false,
       elapsedMs: Date.now() - startedAt,
+      originProbe,
       url: getPublicUrlLabel(getChatCompletionsUrl()),
       model: process.env.OPENAI_MODEL || 'gpt-5-nano',
-      errorName: error.name,
-      errorMessage: error.message
+      error: getProviderErrorInfo(error)
     });
   }
 }

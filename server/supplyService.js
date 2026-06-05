@@ -3,7 +3,7 @@ import { buildSupplyMessages } from './supplyPrompt.js';
 
 const DEFAULT_MODEL = 'gpt-5-nano';
 const DEFAULT_BASE_URL = 'https://api.openai.com/v1';
-const DEFAULT_TIMEOUT_MS = 25000;
+const DEFAULT_TIMEOUT_MS = 50000;
 
 function createMockCard(params) {
   const card = createSupplyCard(params);
@@ -91,6 +91,19 @@ export function getPublicUrlLabel(url) {
   }
 }
 
+export function getProviderErrorInfo(error) {
+  return {
+    name: error?.name,
+    message: error?.message,
+    causeName: error?.cause?.name,
+    causeMessage: error?.cause?.message,
+    causeCode: error?.cause?.code,
+    causeErrno: error?.cause?.errno,
+    causeSyscall: error?.cause?.syscall,
+    causeHostname: error?.cause?.hostname
+  };
+}
+
 export async function createChatCompletion(params) {
   const url = getChatCompletionsUrl();
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
@@ -142,7 +155,7 @@ export async function generateSupplyCard(params) {
   try {
     return await createOpenAiCard(params);
   } catch (error) {
-    console.error('OpenAI generation failed, falling back to mock:', error);
+    console.error('OpenAI generation failed, falling back to mock:', getProviderErrorInfo(error));
     return createMockCard(params);
   }
 }
