@@ -74,7 +74,7 @@ function LoadingSupplyCard() {
   useEffect(() => {
     const timer = window.setInterval(() => {
       setMessageIndex((index) => (index + 1) % loadingMessages.length);
-    }, 1800);
+    }, 3600);
 
     return () => window.clearInterval(timer);
   }, []);

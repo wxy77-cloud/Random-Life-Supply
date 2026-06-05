@@ -6,8 +6,17 @@ export const typeLabels = {
   idea: '一个奇妙灵感'
 };
 
+export const modeDescriptions = {
+  静候缘分: '怀有期待，耐心等候美好。',
+  低迷时刻: '能量偏低，想要一点温柔的补给。',
+  灵感唤醒: '想找回一点创造力。',
+  好奇探索: '想打开视野，想知道一点新东西。',
+  随便逛逛: '没有明确目标，只是想看看会出现什么。'
+};
+
 export function buildSupplyMessages({ type, mode, topic }) {
   const typeLabel = typeLabels[type] ?? type;
+  const modeDescription = modeDescriptions[mode] ?? '根据用户当前状态生成合适的补给。';
 
   return [
     {
@@ -16,7 +25,7 @@ export function buildSupplyMessages({ type, mode, topic }) {
     },
     {
       role: 'user',
-      content: `请根据用户选择生成一张补给卡。用户当前模式：${mode}。用户关注主题：${topic}。补给类型：${typeLabel}。请输出两行：第一行以“标题：”开头，标题不超过20个中文字符；第二行以“正文：”开头，正文500字以内。不要 JSON，不要 Markdown。`
+      content: `请根据用户选择生成一张补给卡。用户当前模式：${mode}。模式阐释：${modeDescription}。用户关注主题：${topic}。补给类型：${typeLabel}。请输出两行：第一行以“标题：”开头，标题不超过20个中文字符；第二行以“正文：”开头，正文500字以内。不要 JSON，不要 Markdown。`
     }
   ];
 }

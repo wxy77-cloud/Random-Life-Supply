@@ -464,7 +464,7 @@ p {
   padding-top: 0;
   border-top: 0;
   margin-bottom: 0;
-  animation: loading-text 1.8s ease both infinite;
+  animation: loading-text 3.6s ease both infinite;
 }
 
 .supply-card h2 {
