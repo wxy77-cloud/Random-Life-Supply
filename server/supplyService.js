@@ -1,9 +1,8 @@
 import OpenAI from 'openai';
 import { createSupplyCard } from '../src/services/supplyGenerator.js';
-import { buildSupplyMessages, supplyCardSchema } from './supplyPrompt.js';
+import { buildSupplyMessages } from './supplyPrompt.js';
 
 const DEFAULT_MODEL = 'gpt-5-nano';
-const MAX_COMPLETION_TOKENS = 420;
 
 function createMockCard(params) {
   const card = createSupplyCard(params);
@@ -19,18 +18,14 @@ function createMockCard(params) {
     : null;
 }
 
-function normalizeAiCard(card, params) {
-  const title = clampText(card.title, 20, '今日补给');
-  const content = clampText(card.content, 180, '先给自己一点安静的空间，再继续往前走。');
-  const modes = normalizeList(card.modes, params.mode, 3);
-
+function normalizeAiText(text, params) {
   return {
     id: `ai-${Date.now()}`,
     type: params.type,
-    title,
-    content: ensureContentLength(content),
-    tags: normalizeList(card.tags, params.topic, 5),
-    modes,
+    title: 'AI 补给',
+    content: clampText(text, 200, '先给自己一点安静的空间，再继续往前走。'),
+    tags: [params.topic],
+    modes: [params.mode],
     mode: params.mode,
     topic: params.topic,
     matched: true,
@@ -56,36 +51,9 @@ function normalizeList(value, fallback, limit) {
   return unique.slice(0, limit);
 }
 
-function parseJsonObject(text) {
-  const trimmed = String(text ?? '').trim();
-
-  try {
-    return JSON.parse(trimmed);
-  } catch {
-    const match = trimmed.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('模型没有返回 JSON 对象');
-    return JSON.parse(match[0]);
-  }
-}
-
-function assertSupplyShape(card) {
-  if (!card || typeof card !== 'object' || Array.isArray(card)) {
-    throw new Error('模型返回的不是 JSON 对象');
-  }
-
-  if (typeof card.title !== 'string' || typeof card.content !== 'string') {
-    throw new Error('模型返回缺少 title 或 content');
-  }
-
-  if (!Array.isArray(card.tags) || !Array.isArray(card.modes)) {
-    throw new Error('模型返回缺少 tags 或 modes 数组');
-  }
-}
-
-function hasUnsafeContent(card) {
-  const text = `${card.title ?? ''} ${card.content ?? ''} ${(card.tags ?? []).join(' ')}`;
+function hasUnsafeContent(text) {
   const unsafeWords = ['自杀', '自残', '毒品', '赌博', '色情', '暴力', '武器', '违法', '犯罪'];
-  return unsafeWords.some((word) => text.includes(word));
+  return unsafeWords.some((word) => String(text ?? '').includes(word));
 }
 
 async function createOpenAiCard(params) {
@@ -95,50 +63,25 @@ async function createOpenAiCard(params) {
     timeout: Number(process.env.OPENAI_TIMEOUT_MS) || 12000
   });
 
-  let response;
-  const preferJsonObject = process.env.OPENAI_RESPONSE_FORMAT === 'json_object';
+  const response = await createChatCompletion(client, params);
+  const content = response.choices?.[0]?.message?.content;
 
-  try {
-    response = await createChatCompletion(client, params, preferJsonObject ? { type: 'json_object' } : getJsonSchemaFormat());
-  } catch (error) {
-    console.warn('Preferred JSON mode failed, retrying with JSON object mode:', error);
-    response = await createChatCompletion(client, params, { type: 'json_object' });
+  if (!String(content ?? '').trim()) {
+    throw new Error('模型返回空内容');
   }
 
-  const content = response.choices?.[0]?.message?.content;
-  const parsedCard = parseJsonObject(content);
-  assertSupplyShape(parsedCard);
-
-  if (hasUnsafeContent(parsedCard)) {
+  if (hasUnsafeContent(content)) {
     throw new Error('模型返回内容未通过安全词检查');
   }
 
-  return normalizeAiCard(parsedCard, params);
+  return normalizeAiText(content, params);
 }
 
-function getJsonSchemaFormat() {
-  return {
-    type: 'json_schema',
-    json_schema: {
-      name: 'supply_card',
-      strict: true,
-      schema: supplyCardSchema
-    }
-  };
-}
-
-function createChatCompletion(client, params, responseFormat) {
-  const request = {
+function createChatCompletion(client, params) {
+  return client.chat.completions.create({
     model: process.env.OPENAI_MODEL || DEFAULT_MODEL,
-    messages: buildSupplyMessages(params),
-    max_completion_tokens: MAX_COMPLETION_TOKENS
-  };
-
-  if (responseFormat) {
-    request.response_format = responseFormat;
-  }
-
-  return client.chat.completions.create(request);
+    messages: buildSupplyMessages(params)
+  });
 }
 
 export async function generateSupplyCard(params) {

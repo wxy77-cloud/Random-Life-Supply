@@ -18,27 +18,34 @@ export default function FavoritesPage({ favorites, onRemoveFavorite }) {
         </section>
       ) : (
         <section className="favorite-list" aria-label="收藏的补给卡">
-          {favorites.map((card) => (
-            <article className="favorite-card" key={card.id}>
-              <div className="card-top">
-                <span className="tag">{card.mode}</span>
-                <span className="tag sage">{card.topic}</span>
-              </div>
-              <h2>{card.title}</h2>
-              <p>{card.content}</p>
-              <div className="card-tags" aria-label="补给标签">
-                {card.tags.map((tag) => (
-                  <span className="mini-tag" key={tag}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <button className="delete-favorite-button" type="button" onClick={() => onRemoveFavorite(card.id)}>
-                <Trash2 size={17} aria-hidden="true" />
-                <span>删除收藏</span>
-              </button>
-            </article>
-          ))}
+          {favorites.map((card) => {
+            const isAiCard = card.source === 'openai';
+
+            return (
+              <article className="favorite-card" key={card.id}>
+                <div className="card-top">
+                  <span className="tag">{card.mode}</span>
+                  <span className="tag sage">{card.topic}</span>
+                  {isAiCard && <span className="tag subtle">AI 生成</span>}
+                </div>
+                {!isAiCard && <h2>{card.title}</h2>}
+                <p>{card.content}</p>
+                {!isAiCard && (
+                  <div className="card-tags" aria-label="补给标签">
+                    {card.tags.map((tag) => (
+                      <span className="mini-tag" key={tag}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <button className="delete-favorite-button" type="button" onClick={() => onRemoveFavorite(card.id)}>
+                  <Trash2 size={17} aria-hidden="true" />
+                  <span>删除收藏</span>
+                </button>
+              </article>
+            );
+          })}
         </section>
       )}
     </main>
